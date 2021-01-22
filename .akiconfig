@@ -1,0 +1,6 @@
+[aki]
+memory=1GB
+processors=2
+localhostForwarding=true
+swap=0
+swapFile=/Users/$USER/.aki/swap.vhdx
