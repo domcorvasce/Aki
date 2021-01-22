@@ -7,6 +7,9 @@ struct Configuration: Codable {
 
     /// Processors assigned to the VM
     var processors: Int = 2
+
+    /// Virtual machine's dedicated directory
+    var vmDir: String = "~/aki"
 }
 
 /// Returns the path of the configuration file
