@@ -10,6 +10,12 @@ struct Configuration: Codable {
 
     /// Virtual machine's dedicated directory
     var vmDir: String = "~/aki"
+
+    /// CD ROM image filename
+    var cdrom: String = ""
+
+    // Primay disk filename
+    var disk: String = "disk.img"
 }
 
 /// Returns the path of the configuration file
