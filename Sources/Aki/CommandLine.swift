@@ -11,8 +11,15 @@ struct AkiCLI: ParsableCommand {
         let vm = AkiVM()
         vm.start()
 
+        var lastState = vm.getState()
+
+        // TODO: Avoid this loop
         while true {
-            print(vm.getState())
+            if vm.getState() != lastState {
+                print("VM state changed: \(vm.getState())")
+                lastState = vm.getState()
+            }
+
             sleep(1)
         }
     }

@@ -16,6 +16,12 @@ struct Configuration: Codable {
 
     // Primay disk filename
     var disk: String = "disk.img"
+
+    // Kernel filename (e.g. vmlinuz)
+    var kernel: String = "vmlinuz"
+
+    // InitRAM disk (e.g. initramfs)
+    var initramfs: String = "initrd"
 }
 
 /// Returns the path of the configuration file

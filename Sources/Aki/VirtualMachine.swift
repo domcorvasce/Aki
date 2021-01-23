@@ -117,7 +117,7 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
         let natNetwork = VZVirtioNetworkDeviceConfiguration()
         natNetwork.attachment = VZNATNetworkDeviceAttachment()
 
-        vmc.bootLoader = self.generateBootLoaderObject(vmDir)
+        vmc.bootLoader = self.generateBootLoaderObject(config)
         vmc.cpuCount = config.processors
         vmc.memorySize = config.memory * (1024 * 1024)
         vmc.memoryBalloonDevices = [memoryBalloon]
@@ -131,12 +131,13 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
     }
 
     /// Generates Linux boot loader object
-    private func generateBootLoaderObject(_ vmDir: URL) -> VZLinuxBootLoader {
+    private func generateBootLoaderObject(_ config: Configuration) -> VZLinuxBootLoader {
+        let vmDir = NSURL.fileURL(withPath: config.vmDir)
         let bootLoader = VZLinuxBootLoader(
-            kernelURL: vmDir.appendingPathComponent("vmlinuz")
+            kernelURL: vmDir.appendingPathComponent(config.kernel)
         )
 
-        bootLoader.initialRamdiskURL = vmDir.appendingPathComponent("initrd")
+        bootLoader.initialRamdiskURL = vmDir.appendingPathComponent(config.initramfs)
         bootLoader.commandLine = "console=hvc0"
 
         return bootLoader
