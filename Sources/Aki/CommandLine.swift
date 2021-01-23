@@ -8,7 +8,12 @@ struct AkiCLI: ParsableCommand {
     )
 
     mutating func run() throws {
-        var vm = AkiVM()
-        vm.run()
+        let vm = AkiVM()
+        vm.start()
+
+        while true {
+            print(vm.getState())
+            sleep(1)
+        }
     }
 }
