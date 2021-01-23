@@ -8,6 +8,9 @@ struct Configuration: Codable {
     /// Processors assigned to the VM
     var processors: Int = 2
 
+    // Kernel command-line arguments
+    var kernelArgs: String = ""
+
     /// Virtual machine's dedicated directory
     var vmDir: String = "~/aki"
 

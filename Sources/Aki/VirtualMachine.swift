@@ -2,10 +2,6 @@ import Virtualization
 
 /// Implements the virtual machine
 class AkiVM: NSObject, VZVirtualMachineDelegate {
-    // IO pipes
-    private let inPipe = Pipe()
-    private let outPipe = Pipe()
-
     // Instance of the VM
     private var vm: VZVirtualMachine?
 
@@ -90,13 +86,14 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
     /// Generates VM configuration object based on the configuration file
     private func generateConfig() throws -> VZVirtualMachineConfiguration {
         let config = readConfig()
+
         let vmDir = NSURL.fileURL(withPath: config.vmDir)
         let vmc = VZVirtualMachineConfiguration()
 
         let console = VZVirtioConsoleDeviceSerialPortConfiguration()
         console.attachment = VZFileHandleSerialPortAttachment(
-            fileHandleForReading: inPipe.fileHandleForReading,
-            fileHandleForWriting: outPipe.fileHandleForWriting
+            fileHandleForReading: FileHandle.standardInput,
+            fileHandleForWriting: FileHandle.standardOutput
         )
 
         let cdrom = VZVirtioBlockDeviceConfiguration(
@@ -123,7 +120,7 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
         vmc.memoryBalloonDevices = [memoryBalloon]
         vmc.networkDevices = [natNetwork]
         vmc.serialPorts = [console]
-        vmc.storageDevices = [cdrom, disk]
+        vmc.storageDevices = [disk, cdrom]
         vmc.entropyDevices = [VZVirtioEntropyDeviceConfiguration()]
 
         try vmc.validate()
@@ -138,8 +135,7 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
         )
 
         bootLoader.initialRamdiskURL = vmDir.appendingPathComponent(config.initramfs)
-        bootLoader.commandLine = "console=hvc0"
-
+        bootLoader.commandLine = config.kernelArgs
         return bootLoader
     }
 }
