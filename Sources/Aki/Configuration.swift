@@ -1,35 +1,55 @@
 import Foundation
 import Yams
 
-struct Configuration: Codable {
-    /// RAM assigned to the VM (in megabytes)
-    var memory: UInt64 = 512
+/// Hosts configuration options for the Linux kernel
+internal struct KernelConfiguration: Codable {
+    /// Path to the kernel file (e.g. ~/my-dir/vmlinuz)
+    var path: String = ""
 
-    /// Processors assigned to the VM
-    var processors: Int = 2
+    /// Kernel command-line arguments
+    var args: String = ""
 
-    // Kernel command-line arguments
-    var kernelArgs: String = ""
+    /// Path to the initial RAM disk file (e.g. ~/my-dir/initramfs)
+    var initramfsPath: String = ""
+}
 
-    /// Virtual machine's dedicated directory
-    var vmDir: String = "~/aki"
+/// Hosts information about the disks images to attach to the VM
+internal struct DiskImageConfiguration: Codable {
+    /// Path to the disk (e.g. ~/my-dir/ubuntu.iso)
+    var path: String = "<path>/<live-cd>.iso"
 
-    /// CD ROM image filename
-    var cdrom: String = ""
+    /// Indicates whether the disk is read-only
+    var readOnly: Bool = true
+}
 
-    // Primay disk filename
-    var disk: String = "disk.img"
+public struct Configuration: Codable {
+    /// Amount of RAM to assign to the VM (in megabytes)
+    var memory: UInt64 = 1024
 
-    // Kernel filename (e.g. vmlinuz)
-    var kernel: String = "vmlinuz"
+    /// Amount of CPU cores to assign to the VM
+    var cores: Int = 1
 
-    // InitRAM disk (e.g. initramfs)
-    var initramfs: String = "initrd"
+    /// Indicates whether to enable NAT on the guest system.
+    /// The guest will be assigned a private IP address that can be accessed from the host.
+    var nat: Bool = true
+
+    /// Indicates whether to redirect the current terminal's STDIN/STDOUT to the VM for interacting with it.
+    /// You should keep it this option enabled for the first boot, and disable it once SSH or VNC have been setup.
+    var redirectIO: Bool = true
+
+    /// Linux kernel configuration
+    var kernel = KernelConfiguration()
+
+    /// Disks images configuration
+    var images: [DiskImageConfiguration] = [DiskImageConfiguration()]
 }
 
 /// Returns the path of the configuration file
 private func getConfigPath() -> URL {
-    FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".akiconfig")
+    FileManager
+        .default
+        .homeDirectoryForCurrentUser
+        .appendingPathComponent(".akiconfig")
 }
 
 /// Reads the configuration file from the user's directory

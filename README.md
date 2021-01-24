@@ -5,7 +5,7 @@ A lightweight VM for running Linux under macOS using the
 
 ## Requirements
 
-- macOS 11+ (Intel, Apple Silicon)
+- macOS 11+
 - Swift 5.3+
 
 ## Installation
@@ -31,20 +31,21 @@ Finally, open the project in XCode, enable **Automatic manage signing** in the *
 The first time you run Aki, it'll initialize an `.akiconfig` file into your user's directory. You can edit this file to alter the behaviour of the VM:
 
 ```yaml
-memory: 512 # RAM memory (in megabytes)
-processors: 2 # Processors assigned
-vmDir: /Users/dom/Desktop/Aki # Where are VM files stored
-cdrom: extended.iso # Live CD filename
-disk: disk.img # RAW image disk filename (for storage)
-kernel: vmlinuz-lts # Kernel image
-initramfs: initramfs-lts # Initial RAM disk image
-kernelArgs: console=hvc0 # Kernel arguments
-```
+memory: 1024                         # amount of RAM assigned to the VM (in megabytes)
+cores: 2                             # amount of CPU cores assigned to the VM
+nat: true                            # enables NAT
+redirectIO: true                     # redirects current terminal IO to the VM
 
-You can check whether the configuration is valid by typing:
+# Kernel configuration
+kernel:
+  path: '/Users/my-user/vmlinuz'     # kernel path
+  args: 'console=hvc0'               # boot arguments
+  initramfsPath: ''                  # initial RAM disk path (leave empty to skip)
 
-```shell
-aki validate
+# Disk images
+images:
+- path: '/Users/my-user/ubuntu.iso'  # disk image path
+  readOnly: true                     # attaches it in read-only mode
 ```
 
 ## License

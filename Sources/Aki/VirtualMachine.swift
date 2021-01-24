@@ -11,11 +11,14 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
     /// Initializes VM objects as requested by the Virtualization.framework
     func start() {
         do {
-            let config = try self.generateConfig()
-            self.vm = VZVirtualMachine(configuration: config, queue: self.queue)
+            let config = try VirtualMachineConfiguration(readConfig())
+            try config.validate()
+
+            self.vm = VZVirtualMachine(configuration: config.get(), queue: self.queue)
             self.vm?.delegate = self
         } catch {
             print(error)
+            return
         }
 
         print("Starting VM...")
@@ -81,61 +84,5 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
     func virtualMachine(_ virtualMachine: VZVirtualMachine,
                         didStopWithError error: Error) {
         NSLog("VM did stop with an error: \(error)")
-    }
-
-    /// Generates VM configuration object based on the configuration file
-    private func generateConfig() throws -> VZVirtualMachineConfiguration {
-        let config = readConfig()
-
-        let vmDir = NSURL.fileURL(withPath: config.vmDir)
-        let vmc = VZVirtualMachineConfiguration()
-
-        let console = VZVirtioConsoleDeviceSerialPortConfiguration()
-        console.attachment = VZFileHandleSerialPortAttachment(
-            fileHandleForReading: FileHandle.standardInput,
-            fileHandleForWriting: FileHandle.standardOutput
-        )
-
-        let cdrom = VZVirtioBlockDeviceConfiguration(
-            attachment: try! VZDiskImageStorageDeviceAttachment(
-                url: vmDir.appendingPathComponent(config.cdrom),
-                readOnly: true
-            )
-        )
-
-        let disk = VZVirtioBlockDeviceConfiguration(
-            attachment: try! VZDiskImageStorageDeviceAttachment(
-                url: vmDir.appendingPathComponent(config.disk),
-                readOnly: false
-            )
-        )
-
-        let memoryBalloon = VZVirtioTraditionalMemoryBalloonDeviceConfiguration()
-        let natNetwork = VZVirtioNetworkDeviceConfiguration()
-        natNetwork.attachment = VZNATNetworkDeviceAttachment()
-
-        vmc.bootLoader = self.generateBootLoaderObject(config)
-        vmc.cpuCount = config.processors
-        vmc.memorySize = config.memory * (1024 * 1024)
-        vmc.memoryBalloonDevices = [memoryBalloon]
-        vmc.networkDevices = [natNetwork]
-        vmc.serialPorts = [console]
-        vmc.storageDevices = [disk, cdrom]
-        vmc.entropyDevices = [VZVirtioEntropyDeviceConfiguration()]
-
-        try vmc.validate()
-        return vmc
-    }
-
-    /// Generates Linux boot loader object
-    private func generateBootLoaderObject(_ config: Configuration) -> VZLinuxBootLoader {
-        let vmDir = NSURL.fileURL(withPath: config.vmDir)
-        let bootLoader = VZLinuxBootLoader(
-            kernelURL: vmDir.appendingPathComponent(config.kernel)
-        )
-
-        bootLoader.initialRamdiskURL = vmDir.appendingPathComponent(config.initramfs)
-        bootLoader.commandLine = config.kernelArgs
-        return bootLoader
     }
 }
