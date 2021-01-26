@@ -43,20 +43,31 @@ kernel:
   args: 'console=hvc0'               # boot arguments
   initramfsPath: ''                  # initial RAM disk path (leave empty to skip)
 
-# Disk images (supports RAW, VMDK, VDI)
+# Disk images
 images:
 - path: '/Users/my-user/ubuntu.iso'  # disk image path
   readOnly: true                     # attaches it in read-only mode
 ```
 
+### Disks
+
+Currently, the *Virtualization.framework* doesn't support mounting physical devices. Instead, you must use disk images. Disks are mounted in the same order as they are defined, and are given an identifier of the form `/dev/vdX`. For instance, defining:
+
+```yaml
+images:
+- path: livecd.iso
+  readOnly: true
+- path: storage.vmdk
+  readOnly: false
+```
+
+will result into two disks attached to the VM: `/dev/vda`, and `/dev/vdb`.
+
+Virtualization.framework has support for many flat files  including VMDK, VDI, and RAW images.
+
 ## Credits
 
-**Virtualization.framework** doesn't have much documentation right now. Therefore, I had
-to look at similar projects whenever I got stuck. The following projects helped me:
-
-- [SimpleVM](https://github.com/KhaosT/SimpleVM) by [@KhaosT](https://github.com/KhaosT)
-- [vftool](https://github.com/evansm7/vftool) by [@evansm7](https://github.com/evansm7)
-- [vmcli](https://github.com/gyf304/vmcli) by [@gyf304](https://github.com/gyf304)
+**Virtualization.framework** doesn't have much documentation right now. Hence, it was useful to look at the following projects whenever I got stuck: [SimpleVM](https://github.com/KhaosT/SimpleVM) by [@KhaosT](https://github.com/KhaosT), [vftool](https://github.com/evansm7/vftool) by [@evansm7](https://github.com/evansm7), and [vmcli](https://github.com/gyf304/vmcli) by [@gyf304](https://github.com/gyf304).
 
 ## License
 
