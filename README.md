@@ -69,6 +69,11 @@ Virtualization.framework has support for many flat files  including VMDK, VDI, a
 
 **Virtualization.framework** doesn't have much documentation right now. Hence, it was useful to look at the following projects whenever I got stuck: [SimpleVM](https://github.com/KhaosT/SimpleVM) by [@KhaosT](https://github.com/KhaosT), [vftool](https://github.com/evansm7/vftool) by [@evansm7](https://github.com/evansm7), and [vmcli](https://github.com/gyf304/vmcli) by [@gyf304](https://github.com/gyf304).
 
+## Issues
+
+- Virtualization.framework allows the VM to go over the assigned RAM amount.
+- Virtualization.framework doesn't free unused memory even if memory ballooning is enabled.
+
 ## License
 
 Aki is released under [BSD 3-Clause "New" or "Revised" License](./LICENSE).
