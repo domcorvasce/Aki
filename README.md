@@ -35,6 +35,7 @@ memory: 1024                         # amount of RAM assigned to the VM (in mega
 cores: 2                             # amount of CPU cores assigned to the VM
 nat: true                            # enables NAT
 pty: true                            # enables pseudoterminal to interact with the VM
+memoryBalloon: true                  # enables memory ballooning
 
 # Kernel configuration
 kernel:

@@ -38,8 +38,11 @@ struct VirtualMachineConfiguration {
         // Configure general VM settings
         self.vmc.cpuCount = self.config.cores
         self.vmc.memorySize = memorySize
-        self.vmc.memoryBalloonDevices = [MemoryBalloon()]
         self.vmc.entropyDevices = [VZVirtioEntropyDeviceConfiguration()]
+
+        if self.config.memoryBalloon {
+            self.vmc.memoryBalloonDevices = [MemoryBalloon()]
+        }
 
         if self.config.nat {
             self.attachNAT()

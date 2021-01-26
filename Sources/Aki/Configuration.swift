@@ -36,6 +36,9 @@ public struct Configuration: Codable {
     /// Indicates whether to setup a pseudo-terminal to interact with the VM
     var pty: Bool = true
 
+    /// Indicates whether to enable memory ballooning
+    var memoryBalloon: Bool = true
+
     /// Linux kernel configuration
     var kernel = KernelConfiguration()
 
