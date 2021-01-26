@@ -33,9 +33,8 @@ public struct Configuration: Codable {
     /// The guest will be assigned a private IP address that can be accessed from the host.
     var nat: Bool = true
 
-    /// Indicates whether to redirect the current terminal's STDIN/STDOUT to the VM for interacting with it.
-    /// You should keep it this option enabled for the first boot, and disable it once SSH or VNC have been setup.
-    var redirectIO: Bool = true
+    /// Indicates whether to setup a pseudo-terminal to interact with the VM
+    var pty: Bool = true
 
     /// Linux kernel configuration
     var kernel = KernelConfiguration()

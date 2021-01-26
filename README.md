@@ -24,7 +24,7 @@ swift package generate-xcodeproj
 open .
 ```
 
-Finally, open the project in XCode, enable **Automatic manage signing** in the **Signing** section of your manifest, and edit the `Aki.entitlements` file accordingly to your needs.
+Now, open the project in XCode, enable **Automatic manage signing** in the **Signing** section of your manifest, and edit the `Aki.entitlements` file accordingly to your needs. Then, hit "Run".
 
 ## Getting Started
 
@@ -34,7 +34,7 @@ The first time you run Aki, it'll initialize an `.akiconfig` file into your user
 memory: 1024                         # amount of RAM assigned to the VM (in megabytes)
 cores: 2                             # amount of CPU cores assigned to the VM
 nat: true                            # enables NAT
-redirectIO: true                     # redirects current terminal IO to the VM
+pty: true                            # enables pseudoterminal to interact with the VM
 
 # Kernel configuration
 kernel:
@@ -42,11 +42,20 @@ kernel:
   args: 'console=hvc0'               # boot arguments
   initramfsPath: ''                  # initial RAM disk path (leave empty to skip)
 
-# Disk images
+# Disk images (supports RAW, VMDK, VDI)
 images:
 - path: '/Users/my-user/ubuntu.iso'  # disk image path
   readOnly: true                     # attaches it in read-only mode
 ```
+
+## Credits
+
+**Virtualization.framework** doesn't have much documentation right now. Therefore, I had
+to look at similar projects whenever I got stuck. The following projects helped me:
+
+- [SimpleVM](https://github.com/KhaosT/SimpleVM) by [@KhaosT](https://github.com/KhaosT)
+- [vftool](https://github.com/evansm7/vftool) by [@evansm7](https://github.com/evansm7)
+- [vmcli](https://github.com/gyf304/vmcli) by [@gyf304](https://github.com/gyf304)
 
 ## License
 

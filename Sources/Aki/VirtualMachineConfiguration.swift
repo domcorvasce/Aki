@@ -45,7 +45,7 @@ struct VirtualMachineConfiguration {
             self.attachNAT()
         }
 
-        if self.config.redirectIO {
+        if self.config.pty {
             self.attachTerminal()
         }
 
@@ -75,12 +75,34 @@ struct VirtualMachineConfiguration {
 
     /// Attaches the current terminal to the VM
     private func attachTerminal() {
+        // Ask for a free pseudoterminal
+        var ptyFd: Int32 = -1
+        var ttyFd: Int32 = -1
+        var ttyOptions: termios = termios()
+
+        let ecode = openpty(&ptyFd, &ttyFd, nil, &ttyOptions, nil)
+
+        if ecode == -1 {
+            print("Unable to get a pseudoterminal.")
+            return
+        }
+
+        // Enable raw mode for the pseudoterminal
+        tcgetattr(ttyFd, &ttyOptions)
+        cfmakeraw(&ttyOptions)
+        tcsetattr(ttyFd, TCSAFLUSH, &ttyOptions)
+        fcntl(ptyFd, F_SETFL, fcntl(ptyFd, F_GETFL) | O_NONBLOCK)
+
+        // Attach pseudoterminal to the VM
         let term = VZVirtioConsoleDeviceSerialPortConfiguration()
+        let pty = FileHandle(fileDescriptor: ptyFd, closeOnDealloc: true)
 
         term.attachment = VZFileHandleSerialPortAttachment(
-            fileHandleForReading: FileHandle.standardInput,
-            fileHandleForWriting: FileHandle.standardOutput
-        )
+            fileHandleForReading: pty, fileHandleForWriting: pty)
+
+        let ptyId = String(cString: ttyname(ttyFd))
+        print("The target pseudoterminal is \(ptyId)")
+
         self.vmc.serialPorts = [term]
     }
 
