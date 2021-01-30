@@ -86,7 +86,7 @@ struct VirtualMachineConfiguration {
         let ecode = openpty(&ptyFd, &ttyFd, nil, &ttyOptions, nil)
 
         if ecode == -1 {
-            print("Unable to get a pseudoterminal.")
+            NSLog("Unable to get a pseudoterminal.")
             return
         }
 
@@ -104,7 +104,7 @@ struct VirtualMachineConfiguration {
             fileHandleForReading: pty, fileHandleForWriting: pty)
 
         let ptyId = String(cString: ttyname(ttyFd))
-        print("The target pseudoterminal is \(ptyId)")
+        NSLog("The target pseudoterminal is \(ptyId)")
 
         self.vmc.serialPorts = [term]
     }

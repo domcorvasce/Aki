@@ -6,7 +6,15 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
     private var vm: VZVirtualMachine?
 
     // VM queue
-    private var queue: DispatchQueue = DispatchQueue(label: "vm.async.queue")
+    private var queue: DispatchQueue
+
+    // Dispatch group
+    private var dispatchGroup: DispatchGroup
+
+    init(dispatchGroup: DispatchGroup) {
+        self.queue = DispatchQueue(label: "vm.async.queue")
+        self.dispatchGroup = dispatchGroup
+    }
 
     /// Initializes VM objects as requested by the Virtualization.framework
     func start() {
@@ -21,16 +29,18 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
             return
         }
 
-        print("Starting VM...")
+        NSLog("Starting VM")
 
         self.queue.async {
             self.vm?.start { result in
                 switch result {
                 case .success:
-                    print("VM started successfully")
+                    NSLog("VM started successfully")
+                    NSLog("Enter Ctrl + C to stop the VM gracefully")
+                    self.dispatchGroup.enter()
                     break
                 case .failure(let err):
-                    print(err)
+                    NSLog(err.localizedDescription)
                 }
             }
         }
@@ -44,7 +54,7 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
                     do {
                         try virtualMachine.requestStop()
                     } catch {
-                        print("Cannot stop VM due to error: \(error)")
+                        NSLog("Cannot stop VM due to error: \(error)")
                     }
 
                     self.vm = nil
@@ -52,7 +62,7 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
             }
         }
 
-        print("Cannot stop VM due to its state: '\(self.getState())'")
+        NSLog("Cannot stop VM due to its state: '\(self.getState())'")
     }
 
     /// Returns the state of the VM
@@ -79,10 +89,21 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
 
     func guestDidStop(_ virtualMachine: VZVirtualMachine) {
         NSLog("VM did stop successfully")
+        self.dispatchGroup.leave()
+        self.quit()
     }
 
     func virtualMachine(_ virtualMachine: VZVirtualMachine,
                         didStopWithError error: Error) {
         NSLog("VM did stop with an error: \(error)")
+        self.dispatchGroup.leave()
+        self.quit()
+    }
+
+    private func quit() {
+        self.dispatchGroup.notify(queue: DispatchQueue.main) {
+            NSLog("Exiting.")
+            exit(0)
+        }
     }
 }
