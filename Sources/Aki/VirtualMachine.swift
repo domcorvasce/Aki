@@ -25,7 +25,8 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
             self.vm = VZVirtualMachine(configuration: config.get(), queue: self.queue)
             self.vm?.delegate = self
         } catch {
-            print(error)
+            NSLog("An error occured while reading the configuration: '\(error)'")
+            self.quit()
             return
         }
 
@@ -41,6 +42,7 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
                     break
                 case .failure(let err):
                     NSLog(err.localizedDescription)
+                    self.quit()
                 }
             }
         }
@@ -93,8 +95,7 @@ class AkiVM: NSObject, VZVirtualMachineDelegate {
         self.quit()
     }
 
-    func virtualMachine(_ virtualMachine: VZVirtualMachine,
-                        didStopWithError error: Error) {
+    func virtualMachine(_ virtualMachine: VZVirtualMachine, didStopWithError error: Error) {
         NSLog("VM did stop with an error: \(error)")
         self.dispatchGroup.leave()
         self.quit()

@@ -12,23 +12,29 @@ A simple VM for running Linux under macOS using the
 
 Clone this repository:
 
-```shell
+```zsh
 git clone https://github.com:domcorvasce/Aki
 ```
 
-Initialize a XCode project. You need to sign the code before you can use the Virtualization API. You don't need a paid developer account &mdash; unless you need bridged networking.
+Export a `SIGNING_CERT` environment variable with the identifier of your **digital signing identity** (see the **SIGNING IDENTITIES** section of `man codesign`):
 
-```shell
-cd Aki
-swift package generate-xcodeproj
-open .
+```zsh
+export SIGNING_CERT='<your-username>@icloud.com'
 ```
 
-Now, open the project in XCode, enable **Automatic manage signing** in the **Signing** section of your manifest, and edit the `Aki.entitlements` file accordingly to your needs. Then, hit "Run".
+Then, install the CLI:
+
+```zsh
+make install
+```
 
 ## Getting Started
 
-The first time you run Aki, it'll initialize an `.akiconfig` file into your user's directory. You can edit this file to alter the behaviour of the VM:
+### Initialize VM configuration
+
+Run `aki` in the Terminal.
+
+The first time you do, it'll initialize an `.akiconfig` file into your user's directory. You can edit this file to alter the behaviour of the VM:
 
 ```yaml
 memory: 1024                         # amount of RAM assigned to the VM (in megabytes)
@@ -49,7 +55,7 @@ images:
   readOnly: true                     # attaches it in read-only mode
 ```
 
-### Disks
+#### Disks
 
 Currently, the *Virtualization.framework* doesn't support mounting physical devices. Instead, you must use disk images. Disks are mounted in the same order as they are defined, and are given an identifier of the form `/dev/vdX`. For instance, defining:
 
@@ -64,6 +70,14 @@ images:
 will result into two disks attached to the VM: `/dev/vda`, and `/dev/vdb`.
 
 Virtualization.framework has support for many flat files  including VMDK, VDI, and RAW images.
+
+### Boot VM
+
+Once you have edited the VM configuration, run `aki start` to boot the VM. If the `pty` configuration option has been enabled, you can use `screen` to attach to the *pseudoterminal* associated with the VM.
+
+```zsh
+$ aki start
+```
 
 ## Credits
 
