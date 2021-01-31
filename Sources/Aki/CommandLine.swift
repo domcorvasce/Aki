@@ -9,6 +9,7 @@ internal struct AkiCLI: ParsableCommand {
     )
 
     mutating func run() throws {
+        readConfig()
         print("Type `aki start` to boot the VM")
     }
 }

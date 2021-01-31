@@ -16,15 +16,22 @@ Clone this repository:
 git clone https://github.com:domcorvasce/Aki
 ```
 
-Export a `SIGNING_CERT` environment variable with the identifier of your **digital signing identity** (see the **SIGNING IDENTITIES** section of `man codesign`):
+Initialize a XCode project. You need to sign the code before you can use the Virtualization API.
+You don't need a paid developer account — unless you need bridged networking.
 
 ```zsh
-export SIGNING_CERT='<your-username>@icloud.com'
+cd Aki
+swift package generate-xcodeproj
+open .
 ```
 
-Then, install the CLI:
+Now, open the project in XCode, enable **Automatic manage signing** in the **Signing** section of your manifest, and edit the `Aki.entitlements` file accordingly to your needs.
+Finally, click on `Product > Archive` to build the CLI for release.
+
+You can also take advantage of the included `Makefile` to install the CLI from the Terminal:
 
 ```zsh
+export SIGNING_CERT='<your-signing-identity-name>'
 make install
 ```
 
@@ -77,6 +84,10 @@ Once you have edited the VM configuration, run `aki start` to boot the VM. If th
 
 ```zsh
 $ aki start
+
+1970-01-01 00:00:00.000 aki[0000:00000] The target pseudoterminal is /dev/ttys001
+
+$ screen /dev/ttys001
 ```
 
 ## Credits
